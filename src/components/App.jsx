@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Searchbar from './Searchbar/Searchbar';
 import Button from './Button/Button';
 import ImageGallery from './ImageGallery/ImageGallery';
@@ -16,25 +16,25 @@ const App = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
 
-  const getImage = useCallback(async () => {
-    setLoading(true);
-
-    try {
-      const dataImages = await SearchImages(query, page);
-      setPhotos(prevPhotos => [...prevPhotos, ...dataImages.hits]);
-      setIsVisibleBtn(page < Math.ceil(dataImages.totalHits / 12));
-    } catch (error) {
-      Notify.failure(
-        'An error occurred while searching for images. Please try again.'
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, [query, page]);
-
   useEffect(() => {
+    const getImage = async () => {
+      setLoading(true);
+
+      try {
+        const dataImages = await SearchImages(query, page);
+        setPhotos(prevPhotos => [...prevPhotos, ...dataImages.hits]);
+        setIsVisibleBtn(page < Math.ceil(dataImages.totalHits / 12));
+      } catch (error) {
+        Notify.failure(
+          'An error occurred while searching for images. Please try again.'
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (query) getImage();
-  }, [query, page, getImage]);
+  }, [query, page]);
 
   const handleSubmit = newQuery => {
     setQuery(newQuery);
